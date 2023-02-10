@@ -2,6 +2,7 @@ import { Form, useActionData } from "@remix-run/react";
 import { redirect, json } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { createPost } from "~/models/post.server";
+import invariant from "tiny-invariant";
 
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
@@ -21,6 +22,10 @@ export const action = async ({ request }: ActionArgs) => {
     return json(errors);
   }
 
+  invariant(typeof title === "string", "title should be a string");
+  invariant(typeof slug === "string", "slug should be a string");
+  invariant(typeof markdown === "string", "markdown should be a string");
+
   await createPost({ title, slug, markdown });
 
   return redirect("/posts/admin");
@@ -30,7 +35,7 @@ const inputClassName =
   "w-full rounded border border-gray-500 px-2 py-1 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50";
 
 export default function NewPostRoute() {
-  const errors = useActionData();
+  const errors = useActionData<typeof action>();
   return (
     <Form method="post">
       <p>
