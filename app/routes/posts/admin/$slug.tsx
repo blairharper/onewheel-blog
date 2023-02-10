@@ -17,6 +17,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (params.slug === "new") {
     return json({});
   }
+
   const post = await getPost(params.slug);
   if (!post) {
     throw new Response("Not found", { status: 404 });
@@ -46,7 +47,6 @@ export const action = async ({ request, params }: ActionArgs) => {
   invariant(typeof title === "string", "title should be a string");
   invariant(typeof slug === "string", "slug should be a string");
   invariant(typeof markdown === "string", "markdown should be a string");
-
   if (params.slug === "new") {
     await createPost({ title, slug, markdown });
   } else {
@@ -138,4 +138,8 @@ export function CatchBoundary() {
     return <div>Uh oh... this post does not exist.</div>;
   }
   return <div>Uh oh! Something went wrong.</div>;
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <div className="text-red-500">{error.message}</div>;
 }
