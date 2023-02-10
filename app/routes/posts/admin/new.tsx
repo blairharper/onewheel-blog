@@ -1,4 +1,4 @@
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useTransition } from "@remix-run/react";
 import { redirect, json } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { createPost } from "~/models/post.server";
@@ -36,6 +36,10 @@ const inputClassName =
 
 export default function NewPostRoute() {
   const errors = useActionData<typeof action>();
+
+  const transition = useTransition();
+  const isCreating = Boolean(transition.submission);
+
   return (
     <Form method="post">
       <p>
@@ -74,8 +78,9 @@ export default function NewPostRoute() {
         <button
           type="submit"
           className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-800"
+          disabled={isCreating}
         >
-          Save
+          {isCreating ? "Creating..." : "Create Post"}
         </button>
       </p>
     </Form>
