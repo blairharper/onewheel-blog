@@ -1,6 +1,7 @@
 import {
   Form,
   useActionData,
+  useCatch,
   useLoaderData,
   useTransition,
 } from "@remix-run/react";
@@ -12,11 +13,14 @@ import { requireAdminUser } from "~/session.server";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUser(request);
+  invariant(params.slug, "slug should be defined");
   if (params.slug === "new") {
     return json({});
   }
-  invariant(params.slug, "slug should be defined");
   const post = await getPost(params.slug);
+  if (!post) {
+    throw new Response("Not found", { status: 404 });
+  }
   return json({ post });
 };
 
@@ -126,4 +130,12 @@ export default function NewPostRoute() {
       </p>
     </Form>
   );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  if (caught.status === 404) {
+    return <div>Uh oh... this post does not exist.</div>;
+  }
+  return <div>Uh oh! Something went wrong.</div>;
 }
