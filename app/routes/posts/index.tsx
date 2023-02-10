@@ -20,6 +20,7 @@ export default function PostsRoute() {
           <li key={post.slug}>
             <Link
               to={`/posts/${post.slug}`}
+              prefetch="intent"
               className="text-blue-600 underline"
             >
               {post.title}
